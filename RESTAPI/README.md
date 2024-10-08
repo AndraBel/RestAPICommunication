@@ -1,91 +1,89 @@
-# PROTOCOALE DE COMUNICAŢIE. Tema 4. Client Web. Comunicaţie cu REST API.
+# Topic 4. Web Client. Communication with REST API.
 
 Belceanu Andra-Maria 
 
-Grupa 321CA
+# Code Skeleton
 
-# Schelet de cod
+For the implementation of this project, I started from the code skeleton provided in the lab exercises. I utilized and adapted the `helpers.c` and `buffer.c` files without modifying them. In particular, I extensively used functions from `helpers.c`, such as `open_connection`, `close_connection`, `send_to_server`, `receive_from_server`, and `basic_extract_json_response`.
 
-Pentru implementarea acestui proiect, am pornit de la scheletul de cod furnizat în exercițiile de laborator. Am utilizat și adaptat fișierele `helpers.c` și `buffer.c` fără a le modifica. În special, am folosit extensiv funcțiile din `helpers.c`, cum ar fi `open_connection`, `close_connection`, `send_to_server`, `receive_from_server` și `basic_extract_json_response`.
+Additionally, I used the `requests.c` file from the lab exercises but modified and implemented it according to the project requirements. In this file, I implemented the following functions:
 
-În plus, am utilizat fișierul `requests.c` din exercițiile de laborator, dar l-am modificat și l-am implementat conform cerințelor proiectului. În acest fișier, am implementat următoarele funcții:
+- `compute_get_request`: Composes a GET request that needs to be sent to the server. It includes parameters such as host, URL, query parameters, authentication token, cookies, and their count.
 
-- `compute_get_request`: Composează o cerere de tip GET care trebuie trimisă la server. Include parametrii cum ar fi gazda, URL-ul, parametrii de interogare, token-ul de autentificare, cookie-urile și numărul lor.
+- `compute_post_request`: Composes a POST request that needs to be sent to the server. It includes parameters such as host, URL, content type, authentication token, payload (request body), cookies, and their count.
 
-- `compute_post_request`: Composează o cerere de tip POST care trebuie trimisă la server. Include parametrii cum ar fi gazda, URL-ul, tipul de conținut, token-ul de autentificare, încărcătura (corpul cererii), cookie-urile și numărul lor.
+- `compute_delete_request`: Composes a DELETE request that needs to be sent to the server. It includes parameters such as host, URL, query parameters, authentication token, cookies, and their count.
 
-- `compute_delete_request`: Composează o cerere de tip DELETE care trebuie trimisă la server. Include parametrii cum ar fi gazda, URL-ul, parametrii de interogare, token-ul de autentificare, cookie-urile și numărul lor.
+# JSON Library
 
-# Biblioteca JSON
+I chose the nlohmann JSON library for manipulating JSON objects due to its good documentation and ease of use. To print a JSON object, I used the `dump(1)` function with an indentation level of 1 for better readability. Adding a field to a JSON object is straightforward, similar to working with an array, and parsing is done using the `parse` function. For searching within JSON objects, I used the `contains` function.
 
-Am ales biblioteca JSON nlohmann pentru manipularea obiectelor JSON datorită documentației bune și ușurinței de utilizare. Pentru a imprima un obiect JSON, am folosit funcția `dump(1)` cu un nivel de indentare de 1 pentru o mai bună citire. Adăugarea unui câmp într-un obiect JSON este simplă, similară cu lucrul cu un vector, iar parsarea este făcută folosind funcția `parse`. Pentru căutarea în obiectele JSON, am folosit funcția `contains`.
+## Client Implementation
 
-## Implementare Client
+For the client implementation, I ensured proper memory allocation and deallocation whenever necessary. If memory allocation failed, an error message is displayed.
 
-Pentru implementarea clientului, am asigurat o alocare și dezalocare adecvată a memoriei ori de câte ori a fost necesar. În cazul în care alocarea memoriei a eșuat, este afișat un mesaj de eroare.
+For each command, I implemented a separate function:
 
-Pentru fiecare comandă, am implementat o funcție separată:
+### Client Registration
 
-### Înregistrare Client
+- The `handle_register` function allows the registration of a new account.
+- It reads the username and password from the keyboard.
+- A connection to the server is opened, and a JSON object is created with the entered data.
+- The POST request is sent to the server.
+- The server response is checked, and corresponding messages are displayed.
+- The connection is closed at the end.
 
-- Funcția `handle_register` permite înregistrarea unui cont nou.
-- Se citește de la tastatură numele de utilizator și parola.
-- Conexiunea către server se deschide și se creează un obiect JSON cu datele introduse.
-- Cererea de tip POST este trimisă către server.
-- Răspunsul serverului este verificat și se afișează mesaje corespunzătoare.
-- Conexiunea se închide la final.
+### Client Authentication
 
-### Autentificare Client
+- The `handle_login` function performs authentication for an existing account.
+- The username and password are read from the keyboard.
+- A JSON object is created with the entered data, and a POST request for authentication is sent to the server.
+- The server response is checked, and the session cookie is saved for later use.
+- The connection is closed at the end.
 
-- Funcția `handle_login` efectuează autentificarea într-un cont existent.
-- Numele de utilizator și parola sunt citite de la tastatură.
-- Se creează un obiect JSON cu datele introduse și se trimite o cerere de tip POST pentru autentificare către server.
-- Răspunsul serverului este verificat, iar cookie-ul de sesiune este salvat pentru utilizare ulterioară.
-- Conexiunea se închide la final.
+### Access Request
 
-### Acces la Bibliotecă
+- The `handle_access` function requests access.
+- A GET request is sent to the server with the session cookie.
+- The server response is checked, and the token is saved for later use.
+- The connection is closed at the end.
 
-- Funcția `handle_access` solicită accesul la bibliotecă.
-- Se trimite o cerere de tip GET către server cu cookie-ul de sesiune.
-- Răspunsul serverului este verificat, iar token-ul este salvat pentru utilizare ulterioară.
-- Conexiunea se închide la final.
+### Book Information
 
-### Informații despre Cărți
+- The `get_books` function displays information about all the books.
+- A GET request is sent to the server with the access token.
+- The list of books or an error message is displayed based on the server response.
+- The connection is closed at the end.
 
-- Funcția `get_books` afișează informațiile despre toate cărțile din bibliotecă.
-- Se trimite o cerere de tip GET către server cu token-ul de acces.
-- Lista cărților sau un mesaj de eroare este afișat în funcție de răspunsul serverului.
-- Conexiunea se închide la final.
+### Information about a Specific Book
 
-### Informații despre o Anumită Carte
+- The `get_book` function displays information about a specific book.
+- The book ID is read from the keyboard and sent in the GET request.
+- The server response is checked, and information about the book or an error message is displayed accordingly.
+- The connection is closed at the end.
 
-- Funcția `get_book` afișează informațiile despre o anumită carte.
-- ID-ul cărții este citit de la tastatură și trimis în cadrul cererii de tip GET.
-- Răspunsul serverului este verificat, iar informațiile despre carte sau un mesaj de eroare sunt afișate corespunzător.
-- Conexiunea se închide la final.
+### Add Book
 
-### Adăugare Carte
+- The `add_book` function adds a new book.
+- Book details are read from the keyboard and transformed into a JSON object.
+- A POST request is sent to the server with the access token and book data.
+- The server response is checked, and a corresponding message is displayed.
+- The connection is closed at the end.
 
-- Funcția `add_book` adaugă o carte nouă în bibliotecă.
-- Detaliile despre carte sunt citite de la tastatură și transformate într-un obiect JSON.
-- Cererea de tip POST este trimisă către server cu token-ul de acces și datele despre carte.
-- Răspunsul serverului este verificat, iar un mesaj corespunzător este afișat.
-- Conexiunea se închide la final.
+### Delete Book
 
-### Ștergere Carte
+- The `delete_book` function deletes a book.
+- The ID of the book to be deleted is read from the keyboard and sent in the DELETE request.
+- The request is sent to the server with the access token.
+- The server response is checked, and a corresponding message is displayed.
+- The connection is closed at the end.
 
-- Funcția `delete_book` șterge o carte din bibliotecă.
-- ID-ul cărții de șters este citit de la tastatură și trimis în cadrul cererii de tip DELETE.
-- Cererea este trimisă către server cu token-ul de acces.
-- Răspunsul serverului este verificat, iar un mesaj corespunzător este afișat.
-- Conexiunea se închide la final.
+### Client Logout
 
-### Deconectare Client
+- The `handle_logout` function performs the client logout.
+- A GET request is sent to the server to close the session.
+- The server response is checked, and a corresponding message is displayed.
+- The connection is closed at the end.
+- The session cookie and access token are cleared from memory.
 
-- Funcția `handle_logout` efectuează deconectarea clientului.
-- Se trimite o cerere de tip GET către server pentru a închide sesiunea.
-- Răspunsul serverului este verificat, iar un mesaj corespunzător este afișat.
-- Conexiunea se închide la final.
-- Se sterg din memorie cookie-ul de sesiune si token-ul de access
-
-Programul principal rulează într-o buclă infinită unde citește comenzile de la utilizator și apelează funcția corespunzătoare în consecință.
+The main program runs in an infinite loop where it reads commands from the user and calls the corresponding function accordingly.
