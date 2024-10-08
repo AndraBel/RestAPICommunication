@@ -1,6 +1,4 @@
-# Topic 4. Web Client. Communication with REST API.
-
-Belceanu Andra-Maria 
+# Web Client. Communication with REST API.
 
 # Code Skeleton
 
